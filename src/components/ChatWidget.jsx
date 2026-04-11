@@ -18,12 +18,36 @@ const NEEDS_ROOM_DATA_REGEX =
 const NEEDS_BOOKING_DATA_REGEX =
   /\b(book|booking|bookings|request|requests|pending|approved|declined|reservation)\b/i;
 
+const CHAT_INPUT_MAX_LENGTH = 2000;
+const LONG_WAIT_HINT_MS = 6000;
+
 const makeMessage = (role, text, isError = false) => ({
   id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
   role,
   text,
   isError,
 });
+
+const getChatErrorActionHint = (message = '') => {
+  const lowered = String(message).toLowerCase();
+  if (
+    lowered.includes('api key') ||
+    lowered.includes('unauthorized') ||
+    lowered.includes('reported as leaked')
+  ) {
+    return 'Update the key in .env.local and restart the app.';
+  }
+  if (lowered.includes('too quickly') || lowered.includes('rate limited')) {
+    return 'Wait a few seconds and try again.';
+  }
+  if (lowered.includes('timed out') || lowered.includes('network issue')) {
+    return 'Check your connection and retry.';
+  }
+  if (lowered.includes('too long')) {
+    return `Keep the message under ${CHAT_INPUT_MAX_LENGTH} characters.`;
+  }
+  return 'Please try again.';
+};
 
 const summarizeRoomsForChat = (rooms = [], queryText = '') => {
   if (!Array.isArray(rooms) || rooms.length === 0) {
@@ -145,14 +169,17 @@ function ChatMessage({ message }) {
   );
 }
 
-function SuggestedButton({ text, onClick }) {
+function SuggestedButton({ text, onClick, disabled = false }) {
   const theme = useStore((s) => s.theme);
   const isDark = theme === 'dark';
 
   return (
     <button
       onClick={() => onClick(text)}
-      className={`rounded-full border-2 px-3 py-1.5 text-xs font-bold transition-all hover:scale-105 ${
+      disabled={disabled}
+      className={`rounded-full border-2 px-3 py-1.5 text-xs font-bold transition-all ${
+        disabled ? 'cursor-not-allowed opacity-60' : 'hover:scale-105'
+      } ${
         isDark
           ? 'border-slate-600 bg-slate-800 text-slate-300 hover:bg-slate-700'
           : 'border-slate-900 bg-white text-slate-700 hover:bg-yellow-400'
@@ -173,6 +200,7 @@ export default function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showSlowHint, setShowSlowHint] = useState(false);
   const [messages, setMessages] = useState(() => [
     makeMessage(
       'assistant',
@@ -202,9 +230,36 @@ export default function ChatWidget() {
     }
   }, [messages, isOpen]);
 
+  useEffect(() => {
+    if (!isLoading) {
+      setShowSlowHint(false);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setShowSlowHint(true);
+    }, LONG_WAIT_HINT_MS);
+
+    return () => clearTimeout(timer);
+  }, [isLoading]);
+
   const sendMessage = async (text) => {
-    const cleanText = text.trim();
-    if (!cleanText || isLoading) return;
+    const cleanText = String(text || '').trim();
+    if (isLoading) return;
+
+    if (!cleanText) return;
+
+    if (cleanText.length > CHAT_INPUT_MAX_LENGTH) {
+      setMessages((prev) => [
+        ...prev,
+        makeMessage(
+          'assistant',
+          `Message too long. Maximum is ${CHAT_INPUT_MAX_LENGTH} characters.`,
+          true
+        ),
+      ]);
+      return;
+    }
 
     const userMessage = makeMessage('user', cleanText);
     setMessages((prev) => [...prev, userMessage]);
@@ -242,14 +297,13 @@ export default function ChatWidget() {
 
       setMessages((prev) => [...prev, makeMessage('assistant', reply)]);
     } catch (error) {
+      const messageText =
+        error?.message ||
+        'Assistant is currently unavailable. Please try again.';
+      const actionHint = getChatErrorActionHint(messageText);
       setMessages((prev) => [
         ...prev,
-        makeMessage(
-          'assistant',
-          error?.message ||
-            'Assistant is currently unavailable. Please try again.',
-          true
-        ),
+        makeMessage('assistant', `${messageText} ${actionHint}`, true),
       ]);
     } finally {
       setIsLoading(false);
@@ -335,7 +389,7 @@ export default function ChatWidget() {
               <ChatMessage key={msg.id} message={msg} />
             ))}
             {isLoading && (
-              <div className="mb-2 flex justify-start">
+              <div className="mb-2 flex flex-col items-start gap-1">
                 <div
                   className={`inline-flex items-center gap-2 rounded-2xl border-2 px-3 py-2 text-xs ${
                     isDark
@@ -346,6 +400,15 @@ export default function ChatWidget() {
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
                   Thinking...
                 </div>
+                {showSlowHint && (
+                  <p
+                    className={`px-1 text-[11px] ${
+                      isDark ? 'text-slate-400' : 'text-slate-500'
+                    }`}
+                  >
+                    Taking longer than usual. Please wait a few seconds.
+                  </p>
+                )}
               </div>
             )}
             <div ref={messagesEndRef} />
@@ -358,6 +421,7 @@ export default function ChatWidget() {
                 key={idx}
                 text={prompt}
                 onClick={handlePromptClick}
+                disabled={isLoading}
               />
             ))}
           </div>
@@ -381,7 +445,7 @@ export default function ChatWidget() {
                     : 'text-slate-800 placeholder:text-slate-400'
                 }`}
                 disabled={isLoading}
-                maxLength={500}
+                maxLength={CHAT_INPUT_MAX_LENGTH}
               />
               <button
                 type="submit"

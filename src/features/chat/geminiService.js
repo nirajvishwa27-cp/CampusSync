@@ -1,6 +1,7 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+const getGeminiApiKey = () =>
+  String(import.meta.env.VITE_GEMINI_API_KEY || '').trim();
 const ENV_MODEL = import.meta.env.VITE_GEMINI_MODEL;
 const MODEL_CANDIDATES = Array.from(
   new Set(
@@ -25,7 +26,11 @@ const SYSTEM_INSTRUCTION = [
 
 let cachedModel = null;
 let cachedModelName = null;
+let cachedKeySignature = null;
 let lastRequestAt = 0;
+
+const REQUEST_TIMEOUT_MS = 16000;
+const MAX_TRANSIENT_RETRIES = 2;
 
 const toGeminiRole = (role) => (role === 'assistant' ? 'model' : 'user');
 
@@ -85,20 +90,146 @@ const isModelNotFoundError = (error) => {
   return message.includes('[404') || message.includes('is not found');
 };
 
+const getErrorMessage = (error) => String(error?.message || '').toLowerCase();
+
+const isLeakedApiKeyError = (error) => {
+  const message = getErrorMessage(error);
+  return (
+    message.includes('[403') &&
+    (message.includes('api key was reported as leaked') ||
+      message.includes('reported as leaked'))
+  );
+};
+
+const isUnauthorizedApiKeyError = (error) => {
+  const message = getErrorMessage(error);
+  return (
+    message.includes('[401') ||
+    message.includes('unauthenticated') ||
+    message.includes('invalid api key') ||
+    message.includes('permission_denied')
+  );
+};
+
+const isRateLimitError = (error) => {
+  const message = getErrorMessage(error);
+  return (
+    message.includes('[429') ||
+    message.includes('resource_exhausted') ||
+    message.includes('quota')
+  );
+};
+
+const isTimeoutError = (error) => {
+  const message = getErrorMessage(error);
+  return message.includes('timeout');
+};
+
+const isServiceTemporaryError = (error) => {
+  const message = getErrorMessage(error);
+  return (
+    message.includes('[500') ||
+    message.includes('[503') ||
+    message.includes('internal') ||
+    message.includes('service unavailable')
+  );
+};
+
+const isNetworkError = (error) => {
+  const message = getErrorMessage(error);
+  return (
+    message.includes('failed to fetch') ||
+    message.includes('networkerror') ||
+    message.includes('network request failed')
+  );
+};
+
+const isRetryableError = (error) =>
+  isServiceTemporaryError(error) ||
+  isTimeoutError(error) ||
+  isNetworkError(error);
+
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const withTimeout = async (fn, timeoutMs = REQUEST_TIMEOUT_MS) => {
+  let timeoutId;
+  try {
+    const timeoutPromise = new Promise((_, reject) => {
+      timeoutId = setTimeout(() => {
+        reject(new Error(`Chat request timeout after ${timeoutMs / 1000}s.`));
+      }, timeoutMs);
+    });
+
+    return await Promise.race([fn(), timeoutPromise]);
+  } finally {
+    if (timeoutId) clearTimeout(timeoutId);
+  }
+};
+
+const getKeySignature = (key) => `${key.slice(0, 4)}:${key.length}`;
+
+const mapGeminiError = (error) => {
+  if (isLeakedApiKeyError(error)) {
+    return new Error(
+      'Gemini API key has been disabled because it was reported as leaked. Create a new key in Google AI Studio, update VITE_GEMINI_API_KEY in .env.local, and restart the app.'
+    );
+  }
+
+  if (isUnauthorizedApiKeyError(error)) {
+    return new Error(
+      'Gemini API key is invalid or unauthorized. Update VITE_GEMINI_API_KEY in .env.local and restart the app.'
+    );
+  }
+
+  if (isRateLimitError(error)) {
+    return new Error(
+      'Gemini is rate limited right now. Please try again in a moment.'
+    );
+  }
+
+  if (isTimeoutError(error)) {
+    return new Error('Assistant request timed out. Please try again.');
+  }
+
+  if (isNetworkError(error)) {
+    return new Error(
+      'Network issue while contacting Gemini. Check your connection and retry.'
+    );
+  }
+
+  if (isServiceTemporaryError(error)) {
+    return new Error(
+      'Gemini service is temporarily unavailable. Please retry.'
+    );
+  }
+
+  return new Error(
+    error?.message || 'Assistant is currently unavailable. Please try again.'
+  );
+};
+
 const getModel = (modelName) => {
-  if (!GEMINI_API_KEY) {
+  const apiKey = getGeminiApiKey();
+  if (!apiKey) {
     throw new Error(
       'Gemini key is missing. Add VITE_GEMINI_API_KEY in .env.local and restart the app.'
     );
   }
 
+  const keySignature = getKeySignature(apiKey);
+  if (cachedModel && cachedKeySignature !== keySignature) {
+    cachedModel = null;
+    cachedModelName = null;
+  }
+
   if (!cachedModel || cachedModelName !== modelName) {
-    const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+    const genAI = new GoogleGenerativeAI(apiKey);
     cachedModel = genAI.getGenerativeModel({
       model: modelName,
       systemInstruction: SYSTEM_INSTRUCTION,
     });
     cachedModelName = modelName;
+    cachedKeySignature = keySignature;
   }
 
   return cachedModel;
@@ -142,33 +273,45 @@ export const askCampusAssistant = async ({
     .join('\n');
 
   try {
-    let lastModelError = null;
-    const normalizedHistory = normalizeHistory(history);
-
-    for (const modelName of MODEL_CANDIDATES) {
+    let attempt = 0;
+    while (attempt <= MAX_TRANSIENT_RETRIES) {
       try {
-        const model = getModel(modelName);
-        const chat = model.startChat({ history: normalizedHistory });
-        const response = await chat.sendMessage(prompt);
-        const reply = response.response.text().trim();
-        return reply || 'I could not generate a response right now.';
-      } catch (modelError) {
-        if (!isModelNotFoundError(modelError)) {
-          throw modelError;
+        let lastModelError = null;
+        const normalizedHistory = normalizeHistory(history);
+
+        for (const modelName of MODEL_CANDIDATES) {
+          try {
+            const model = getModel(modelName);
+            const chat = model.startChat({ history: normalizedHistory });
+            const response = await withTimeout(() => chat.sendMessage(prompt));
+            const reply = response.response.text().trim();
+            return reply || 'I could not generate a response right now.';
+          } catch (modelError) {
+            if (!isModelNotFoundError(modelError)) {
+              throw modelError;
+            }
+            lastModelError = modelError;
+          }
         }
-        lastModelError = modelError;
+
+        throw (
+          lastModelError ||
+          new Error(
+            'No compatible Gemini model is currently available for this key.'
+          )
+        );
+      } catch (error) {
+        if (isRetryableError(error) && attempt < MAX_TRANSIENT_RETRIES) {
+          attempt += 1;
+          await wait(attempt * 500);
+          continue;
+        }
+        throw error;
       }
     }
 
-    throw (
-      lastModelError ||
-      new Error(
-        'No compatible Gemini model is currently available for this key.'
-      )
-    );
+    throw new Error('Assistant is currently unavailable. Please try again.');
   } catch (error) {
-    throw new Error(
-      error?.message || 'Assistant is currently unavailable. Please try again.'
-    );
+    throw mapGeminiError(error);
   }
 };
