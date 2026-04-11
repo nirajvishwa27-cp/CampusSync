@@ -74,6 +74,9 @@ export default function RoomCard({ room, showToggle = false }) {
         ? 'bg-red-900/30'
         : 'bg-red-100';
 
+  const statusLabel = isFree ? 'Free' : isReserved ? 'Reserved' : 'Occupied';
+  const statusSymbol = isFree ? '✓' : isReserved ? '⏱' : '✕';
+
   return (
     <article
       onClick={() => navigate(`/room/${room.id}`)}
@@ -90,21 +93,22 @@ export default function RoomCard({ room, showToggle = false }) {
     >
       {/* Status pill */}
       <span
+        aria-label={`Status: ${statusLabel}`}
         className={`absolute right-4 top-4 inline-flex items-center gap-1.5 rounded-full border-2 ${isDark ? 'border-slate-600' : 'border-slate-900'} px-2.5 py-1 text-xs font-bold uppercase ${statusBg} ${statusTextColor}`}
       >
         <span
           className={`h-2 w-2 rounded-full ${statusColor} ${isFree ? 'animate-pulse' : ''}`}
         />
-        {isFree ? 'Free' : isReserved ? 'Reserved' : 'Occupied'}
+        <span aria-hidden="true">{statusSymbol}</span> {statusLabel}
       </span>
 
       <p
-        className={`mb-1 font-mono text-[10px] uppercase tracking-widest ${isDark ? 'text-slate-500' : 'text-slate-400'}`}
+        className={`mb-1 type-micro ${isDark ? 'text-slate-500' : 'text-slate-400'}`}
       >
         Room
       </p>
       <h3
-        className={`pr-20 text-lg font-black leading-tight ${isDark ? 'text-slate-100' : 'text-slate-900'}`}
+        className={`pr-20 type-heading-md ${isDark ? 'text-slate-100' : 'text-slate-900'}`}
       >
         {room.name}
       </h3>
@@ -123,7 +127,7 @@ export default function RoomCard({ room, showToggle = false }) {
       </div>
 
       <p
-        className={`mt-3 font-mono text-xs ${isDark ? 'text-slate-500' : 'text-slate-500'}`}
+        className={`mt-3 type-caption ${isDark ? 'text-slate-500' : 'text-slate-500'}`}
       >
         {[
           room.building || 'Building N/A',
@@ -136,13 +140,13 @@ export default function RoomCard({ room, showToggle = false }) {
       >
         {room.note && (
           <p
-            className={`mb-2 rounded-lg border ${isDark ? 'border-slate-600 bg-slate-800 text-slate-400' : 'border-slate-300 bg-slate-50 text-slate-600'} px-2 py-1 text-xs font-medium`}
+            className={`mb-2 rounded-lg border ${isDark ? 'border-slate-600 bg-slate-800 text-slate-400' : 'border-slate-300 bg-slate-50 text-slate-600'} px-2 py-1 type-caption`}
           >
             {room.note}
           </p>
         )}
         <p
-          className={`font-mono text-[10px] uppercase ${isDark ? 'text-slate-600' : 'text-slate-400'}`}
+          className={`type-micro ${isDark ? 'text-slate-600' : 'text-slate-400'}`}
         >
           Updated {timeAgo(room.updatedAt)}
         </p>

@@ -50,6 +50,9 @@ import {
   reserveRoom,
   toggleRoomStatus,
 } from '../firebase/rooms';
+import moduleOneMedia from '../assets/showcase/module-1.svg';
+import moduleTwoMedia from '../assets/showcase/module-2.svg';
+import moduleThreeMedia from '../assets/showcase/module-3.svg';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
@@ -66,6 +69,8 @@ function timestampToMs(value) {
   const parsed = new Date(value).getTime();
   return Number.isNaN(parsed) ? null : parsed;
 }
+
+const SHOWCASE_MEDIA = [moduleOneMedia, moduleTwoMedia, moduleThreeMedia];
 
 // --- 1. The Magic SVG Filter (Squiggly Lines) ---
 export function SquiggleFilter() {
@@ -1441,6 +1446,7 @@ export function LiveResourceLedger({
 export function SketchbookShowcase({ rooms }) {
   const sectionRef = useRef(null);
   const triggerRef = useRef(null);
+  const [mediaErrorMap, setMediaErrorMap] = useState({});
 
   useLayoutEffect(() => {
     if (!sectionRef.current || !triggerRef.current) return;
@@ -1468,7 +1474,7 @@ export function SketchbookShowcase({ rooms }) {
       reserved: 'bg-amber-50',
     };
 
-    const mapped = rooms.slice(0, 3).map((room) => {
+    const mapped = rooms.slice(0, 3).map((room, index) => {
       const status = effectiveStatus(room);
       return {
         title: room.name,
@@ -1476,6 +1482,7 @@ export function SketchbookShowcase({ rooms }) {
         color: palette[status] || 'bg-blue-50',
         details: `${room.building || 'N/A'} / floor ${room.floor || 'N/A'} / cap ${room.capacity || 0}`,
         status,
+        media: SHOWCASE_MEDIA[index] || null,
       };
     });
 
@@ -1486,6 +1493,7 @@ export function SketchbookShowcase({ rooms }) {
         color: 'bg-slate-50',
         details: 'Awaiting seeded room data',
         status: 'pending',
+        media: SHOWCASE_MEDIA[mapped.length] || null,
       });
     }
 
@@ -1514,13 +1522,27 @@ export function SketchbookShowcase({ rooms }) {
               )}
               style={{ filter: 'url(#squiggle)' }}
             >
-              <div className="flex-1 border-2 border-dashed border-slate-400 rounded-xl flex items-center justify-center bg-white/50">
-                <div className="text-center">
-                  <PenTool size={80} className="mx-auto text-slate-200" />
-                  <p className="mt-4 font-mono text-xs uppercase tracking-widest text-slate-500">
-                    {p.status}
-                  </p>
-                </div>
+              <div className="flex-1 border-2 border-dashed border-slate-400 rounded-xl overflow-hidden bg-white/70">
+                {p.media && !mediaErrorMap[i] ? (
+                  <img
+                    src={p.media}
+                    alt={`${p.title} showcase preview`}
+                    className="h-full w-full object-cover"
+                    loading="lazy"
+                    onError={() =>
+                      setMediaErrorMap((prev) => ({ ...prev, [i]: true }))
+                    }
+                  />
+                ) : (
+                  <div className="h-full w-full flex items-center justify-center bg-white/50">
+                    <div className="text-center">
+                      <PenTool size={80} className="mx-auto text-slate-200" />
+                      <p className="mt-4 font-mono text-xs uppercase tracking-widest text-slate-500">
+                        {p.status}
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="flex justify-between items-end">
                 <div>

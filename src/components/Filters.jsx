@@ -26,27 +26,23 @@ export default function Filters({
     if (onEquipment) onEquipment('all');
   };
 
-  const inputClass = `w-full rounded-lg border-2 ${isDark ? 'border-slate-600 bg-slate-800 text-slate-200 focus:border-yellow-500 focus:bg-slate-700 focus:ring-2 focus:ring-yellow-500/40' : 'border-slate-900 bg-white text-slate-700 focus:border-yellow-600 focus:bg-yellow-50 focus:ring-2 focus:ring-yellow-500/30'} py-2.5 pl-9 pr-3 text-base sm:text-sm font-bold outline-none transition-all duration-200 placeholder:text-slate-400`;
-  const selectClass = `min-h-11 rounded-lg border-2 ${isDark ? 'border-slate-600 bg-slate-800 text-slate-200 focus:border-yellow-500 focus:bg-slate-700 focus:ring-2 focus:ring-yellow-500/40' : 'border-slate-900 bg-white text-slate-700 focus:border-yellow-600 focus:bg-yellow-50 focus:ring-2 focus:ring-yellow-500/30'} px-3 py-2.5 text-base sm:text-sm font-bold outline-none transition-all duration-200`;
+  const inputClass = 'ui-field pl-9 pr-3';
+  const selectClass = 'ui-field';
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between gap-3">
+      <div className="mb-5 flex items-center justify-between gap-3">
         <h2
-          className={`font-mono text-xs font-bold uppercase tracking-widest ${isDark ? 'text-slate-500' : 'text-slate-500'}`}
+          className={`type-eyebrow ${isDark ? 'text-slate-500' : 'text-slate-500'}`}
         >
           Smart Filters
         </h2>
-        <button
-          type="button"
-          onClick={handleReset}
-          className={`rounded-lg border-2 ${isDark ? 'border-slate-600 bg-slate-800 text-slate-300 hover:bg-slate-700 hover:ring-2 hover:ring-yellow-500/40' : 'border-slate-900 bg-white text-slate-600 hover:bg-yellow-400 hover:text-slate-900 hover:ring-2 hover:ring-yellow-500/30'} px-3 py-2 text-xs font-bold transition-all duration-200 active:scale-95`}
-        >
+        <button type="button" onClick={handleReset} className="ui-btn-subtle">
           Reset
         </button>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
         <div className="relative">
           <svg
             viewBox="0 0 24 24"

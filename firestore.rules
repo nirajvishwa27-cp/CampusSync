@@ -146,5 +146,24 @@ service cloud.firestore {
       // Only admin can delete
       allow delete: if isAdmin();
     }
+
+    // ── /chatLogs ───────────────────────────────────────────────
+    match /chatLogs/{logId} {
+      // Users can read only their own chat logs; admin can read all.
+      allow read: if isSignedIn()
+        && (
+          isAdmin()
+          || request.auth.uid == resource.data.uid
+        );
+
+      // Chat logs are only written by trusted backend services.
+      allow create, update, delete: if false;
+    }
+
+    // ── /chatThrottle ───────────────────────────────────────────
+    match /chatThrottle/{userId} {
+      // Never allow direct client access; this is function-managed.
+      allow read, write: if false;
+    }
   }
 }

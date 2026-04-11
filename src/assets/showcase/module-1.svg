@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" role="img" aria-labelledby="t d">
+  <title id="t">Campus Resource Dashboard Preview</title>
+  <desc id="d">Illustration of a dashboard card with room availability tiles.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#d1fae5"/>
+      <stop offset="1" stop-color="#bfdbfe"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="900" fill="url(#bg)"/>
+  <rect x="70" y="80" width="1060" height="740" rx="28" fill="#fffdf7" stroke="#0f172a" stroke-width="10"/>
+  <rect x="110" y="130" width="980" height="90" rx="18" fill="#e2e8f0"/>
+  <rect x="140" y="160" width="240" height="30" rx="8" fill="#94a3b8"/>
+  <rect x="780" y="155" width="270" height="40" rx="20" fill="#22c55e"/>
+  <rect x="120" y="270" width="300" height="220" rx="20" fill="#dcfce7" stroke="#14532d" stroke-width="6"/>
+  <rect x="450" y="270" width="300" height="220" rx="20" fill="#fee2e2" stroke="#7f1d1d" stroke-width="6"/>
+  <rect x="780" y="270" width="300" height="220" rx="20" fill="#fef9c3" stroke="#713f12" stroke-width="6"/>
+  <rect x="120" y="530" width="960" height="230" rx="20" fill="#f8fafc" stroke="#334155" stroke-width="6"/>
+  <circle cx="220" cy="645" r="52" fill="#34d399"/>
+  <circle cx="360" cy="645" r="52" fill="#fb7185"/>
+  <circle cx="500" cy="645" r="52" fill="#fbbf24"/>
+  <rect x="620" y="605" width="420" height="26" rx="10" fill="#94a3b8"/>
+  <rect x="620" y="650" width="320" height="20" rx="10" fill="#cbd5e1"/>
+  <rect x="620" y="688" width="360" height="20" rx="10" fill="#cbd5e1"/>
+</svg>

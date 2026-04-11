@@ -74,13 +74,10 @@ export default function Login({ initialMode = 'login' }) {
           <div className="mb-3 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-600 text-xl font-black text-white shadow-lg shadow-blue-500/30">
             CS
           </div>
-          <h1
-            className="text-3xl font-black tracking-tight"
-            style={{ color: 'var(--text)' }}
-          >
+          <h1 className="type-heading-lg" style={{ color: 'var(--text)' }}>
             CampusSync
           </h1>
-          <p className="mt-1" style={{ color: 'var(--text-muted)' }}>
+          <p className="mt-1 type-body" style={{ color: 'var(--text-muted)' }}>
             Real-time campus room availability
           </p>
         </div>
@@ -119,7 +116,7 @@ export default function Login({ initialMode = 'login' }) {
             {mode === 'register' && (
               <>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
+                  <label className="mb-1.5 block type-eyebrow text-slate-500">
                     Full Name
                   </label>
                   <input
@@ -135,7 +132,7 @@ export default function Login({ initialMode = 'login' }) {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
+                  <label className="mb-1.5 block type-eyebrow text-slate-500">
                     Role
                   </label>
                   <select
@@ -157,7 +154,7 @@ export default function Login({ initialMode = 'login' }) {
             )}
 
             <div>
-              <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
+              <label className="mb-1.5 block type-eyebrow text-slate-500">
                 Email
               </label>
               <input
@@ -175,7 +172,7 @@ export default function Login({ initialMode = 'login' }) {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
+              <label className="mb-1.5 block type-eyebrow text-slate-500">
                 Password
               </label>
               <input
@@ -208,7 +205,7 @@ export default function Login({ initialMode = 'login' }) {
 
           {mode === 'login' && (
             <p
-              className="mt-4 text-center text-xs"
+              className="mt-4 text-center type-caption"
               style={{ color: 'var(--text-subtle)' }}
             >
               Don't have an account?{' '}
@@ -220,7 +217,7 @@ export default function Login({ initialMode = 'login' }) {
         </div>
 
         <p
-          className="mt-4 text-center text-xs"
+          className="mt-4 text-center type-caption"
           style={{ color: 'var(--text-subtle)' }}
         >
           Campus Room Availability System

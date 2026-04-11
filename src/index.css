@@ -98,12 +98,78 @@
     font-family: 'Caveat', 'Comic Sans MS', cursive;
   }
 
+  /* Typography scale for consistent hierarchy */
+  .type-display {
+    @apply text-4xl font-black tracking-tight leading-tight md:text-5xl;
+  }
+
+  .type-heading-lg {
+    @apply text-2xl font-black tracking-tight leading-tight md:text-3xl;
+  }
+
+  .type-heading-md {
+    @apply text-lg font-black tracking-tight leading-tight md:text-xl;
+  }
+
+  .type-body {
+    @apply text-sm font-medium leading-relaxed md:text-base;
+  }
+
+  .type-caption {
+    @apply text-xs font-medium leading-relaxed;
+  }
+
+  .type-eyebrow {
+    @apply font-mono text-xs font-bold uppercase tracking-widest;
+  }
+
+  .type-micro {
+    @apply font-mono text-[10px] font-bold uppercase tracking-widest;
+  }
+
+  .type-stat {
+    @apply text-3xl font-black leading-none tracking-tight;
+  }
+
+  /* Shared control styles for consistent focus/hover behavior */
+  .ui-field {
+    @apply min-h-11 w-full rounded-lg border-2 border-slate-900 bg-white px-3 py-2.5 text-sm font-medium text-slate-700 outline-none transition-all duration-200 placeholder:text-slate-400;
+  }
+
+  .ui-field:focus {
+    @apply border-yellow-600 bg-yellow-50 ring-2 ring-yellow-500/30;
+  }
+
+  .dark .ui-field {
+    @apply border-slate-600 bg-slate-800 text-slate-200;
+  }
+
+  .dark .ui-field:focus {
+    @apply border-yellow-500 bg-slate-700 ring-yellow-500/40;
+  }
+
+  .ui-btn-subtle {
+    @apply rounded-lg border-2 border-slate-900 bg-white px-3 py-2 text-xs font-bold text-slate-600 transition-all duration-200 active:scale-95;
+  }
+
+  .ui-btn-subtle:hover {
+    @apply bg-yellow-400 text-slate-900 ring-2 ring-yellow-500/30;
+  }
+
+  .dark .ui-btn-subtle {
+    @apply border-slate-600 bg-slate-800 text-slate-300;
+  }
+
+  .dark .ui-btn-subtle:hover {
+    @apply bg-slate-700 ring-yellow-500/40;
+  }
+
   /* Sketchy dark mode card */
   .sketchy-card {
     @apply rounded-2xl border-2 border-slate-900 bg-white;
     box-shadow: 4px 4px 0px 0px var(--shadow-color);
   }
-  
+
   .dark .sketchy-card {
     @apply border-slate-700;
     background: var(--bg-card);
@@ -114,7 +180,7 @@
   .sketchy-input {
     @apply rounded-lg border-2 border-slate-900 bg-white px-4 py-2 text-sm font-bold text-slate-700 outline-none transition-all;
   }
-  
+
   .dark .sketchy-input {
     @apply border-slate-600 bg-slate-800 text-slate-200;
   }
@@ -123,7 +189,7 @@
   .sketchy-btn {
     @apply rounded-xl border-2 border-slate-900 bg-yellow-400 px-5 py-2.5 text-sm font-bold text-slate-900 ring-2 ring-slate-900/20 transition-all duration-200 hover:bg-yellow-300 active:scale-95;
   }
-  
+
   .dark .sketchy-btn {
     @apply border-slate-600 bg-yellow-500 text-slate-900;
   }
