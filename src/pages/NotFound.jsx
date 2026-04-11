@@ -21,10 +21,10 @@ export default function NotFound() {
             Go to landing
           </Link>
           <Link
-            to="/app"
+            to="/dashboard"
             className="rounded-xl border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
           >
-            Go to app
+            Go to dashboard
           </Link>
         </div>
       </div>

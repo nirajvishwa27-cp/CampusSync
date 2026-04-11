@@ -56,16 +56,16 @@ function BookingCard({ booking, onRespond }) {
       )}
 
       {canRespond && booking.status === BOOKING_STATUS.PENDING && (
-        <div className="mt-3 flex gap-2">
+        <div className="mt-3 flex flex-col gap-2 sm:flex-row">
           <button
             onClick={() => onRespond(booking.id, BOOKING_STATUS.APPROVED)}
-            className="flex-1 rounded-lg bg-green-500 py-1.5 text-xs font-semibold text-white hover:bg-green-600"
+            className="flex-1 rounded-lg bg-green-500 py-2 text-xs font-semibold text-white hover:bg-green-600"
           >
             Approve
           </button>
           <button
             onClick={() => onRespond(booking.id, BOOKING_STATUS.DECLINED)}
-            className="flex-1 rounded-lg bg-red-500 py-1.5 text-xs font-semibold text-white hover:bg-red-600"
+            className="flex-1 rounded-lg bg-red-500 py-2 text-xs font-semibold text-white hover:bg-red-600"
           >
             Decline
           </button>

@@ -4,7 +4,6 @@ import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { loginUser, registerUser } from '../features/auth/authService';
 import useStore from '../store/useStore';
 import toast from 'react-hot-toast';
-import ThemeToggle from '../components/ThemeToggle';
 import { ROLES } from '../lib/constants';
 
 const getRoleHome = (role) => {
@@ -31,17 +30,17 @@ export default function Login({ initialMode = 'login' }) {
   const handleSubmit = async () => {
     if (!form.email || !form.password)
       return toast.error('Fill in all fields.');
-    
+
     // Password validation
     if (mode === 'register' && form.password.length < 6) {
       return toast.error('Password must be at least 6 characters.');
     }
-    
+
     // Email validation
     if (!form.email.includes('@')) {
       return toast.error('Please enter a valid email address.');
     }
-    
+
     setLoading(true);
     try {
       let user;
@@ -69,9 +68,6 @@ export default function Login({ initialMode = 'login' }) {
 
   return (
     <div className="relative flex min-h-screen items-center justify-center px-4">
-      <div className="absolute right-4 top-4">
-        <ThemeToggle />
-      </div>
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
@@ -211,7 +207,10 @@ export default function Login({ initialMode = 'login' }) {
           </button>
 
           {mode === 'login' && (
-            <p className="mt-4 text-center text-xs" style={{ color: 'var(--text-subtle)' }}>
+            <p
+              className="mt-4 text-center text-xs"
+              style={{ color: 'var(--text-subtle)' }}
+            >
               Don't have an account?{' '}
               <Link to="/register" className="text-blue-600 hover:underline">
                 Register

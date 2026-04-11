@@ -35,7 +35,6 @@ import {
   registerUser,
 } from '../features/auth/authService';
 import { db } from '../firebase/config';
-import ThemeToggle from './ThemeToggle';
 import {
   canManageRoom,
   effectiveStatus,
@@ -2580,7 +2579,6 @@ export default function SketchyPage() {
             </div>
 
             <div className="flex items-center gap-2">
-              <ThemeToggle />
               {authUser ? (
                 <>
                   <span className="hidden rounded-full border-2 border-slate-900 bg-yellow-100 px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-widest md:inline-flex">

@@ -52,10 +52,16 @@ export default function RoomCard({ room, showToggle = false }) {
       ? 'bg-yellow-400'
       : 'bg-red-400';
   const statusTextColor = isFree
-    ? 'text-green-600'
+    ? isDark
+      ? 'text-green-300'
+      : 'text-green-600'
     : isReserved
-      ? 'text-yellow-600'
-      : 'text-red-600';
+      ? isDark
+        ? 'text-yellow-300'
+        : 'text-yellow-600'
+      : isDark
+        ? 'text-red-300'
+        : 'text-red-600';
   const statusBg = isFree
     ? isDark
       ? 'bg-green-900/30'
@@ -79,7 +85,8 @@ export default function RoomCard({ room, showToggle = false }) {
       }}
       role="button"
       tabIndex={0}
-      className={`group relative cursor-pointer rounded-2xl border-2 ${isDark ? 'border-slate-700 bg-[#242424]' : 'border-slate-900 bg-white'} p-4 shadow-[4px_4px_0px_0px_#0f172a] transition-all duration-200 hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#0f172a]`}
+      className={`group relative cursor-pointer rounded-2xl border-2 ${isDark ? 'border-slate-700 bg-[#242424]' : 'border-slate-900 bg-white'} p-4 transition-all duration-200 hover:-translate-y-1`}
+      style={{ boxShadow: `4px 4px 0px 0px var(--shadow-color)` }}
     >
       {/* Status pill */}
       <span

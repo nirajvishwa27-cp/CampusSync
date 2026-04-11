@@ -49,7 +49,7 @@ export default function BookingRequest({ room }) {
   };
 
   const inputClassName =
-    'w-full rounded-lg border px-3 py-2 text-sm outline-none transition-colors';
+    'w-full rounded-lg border px-3 py-2.5 text-base sm:text-sm outline-none transition-colors';
   const labelClassName =
     'block text-xs font-semibold uppercase tracking-wide mb-1';
 
@@ -74,6 +74,7 @@ export default function BookingRequest({ room }) {
           type="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
+          disabled={loading}
           className={inputClassName}
           style={{
             borderColor: 'var(--border)',
@@ -84,7 +85,7 @@ export default function BookingRequest({ room }) {
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div>
           <label
             className={labelClassName}
@@ -96,6 +97,7 @@ export default function BookingRequest({ room }) {
             type="time"
             value={startTime}
             onChange={(e) => setStartTime(e.target.value)}
+            disabled={loading}
             className={inputClassName}
             style={{
               borderColor: 'var(--border)',
@@ -115,6 +117,7 @@ export default function BookingRequest({ room }) {
             type="time"
             value={endTime}
             onChange={(e) => setEndTime(e.target.value)}
+            disabled={loading}
             className={inputClassName}
             style={{
               borderColor: 'var(--border)',
@@ -135,6 +138,7 @@ export default function BookingRequest({ room }) {
         <textarea
           value={purpose}
           onChange={(e) => setPurpose(e.target.value)}
+          disabled={loading}
           rows={2}
           placeholder="Why do you need this room?"
           className={inputClassName + ' resize-none'}

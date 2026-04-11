@@ -20,7 +20,9 @@ import {
 
 export default function Admin() {
   const rooms = useStore((s) => s.rooms);
+  const theme = useStore((s) => s.theme);
   const logs = useActivityLogs(200);
+  const isDark = theme === 'dark';
   const [newRoom, setNewRoom] = useState({
     name: '',
     building: '',
@@ -119,60 +121,113 @@ export default function Admin() {
     };
   }, [logs]);
 
+  const panelClass = `rounded-2xl border-2 ${
+    isDark ? 'border-slate-700 bg-[#242424]' : 'border-slate-900 bg-white'
+  } shadow-[4px_4px_0px_0px_#0f172a]`;
+  const formInputClass = `rounded-lg border-2 px-4 py-2.5 text-sm font-bold outline-none transition-all ${
+    isDark
+      ? 'border-slate-600 bg-slate-800 text-slate-200 focus:bg-slate-700 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/30'
+      : 'border-slate-900 bg-white text-slate-700 focus:bg-yellow-50'
+  }`;
+
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="rounded-2xl border-2 border-slate-900 bg-white p-6 shadow-[4px_4px_0px_0px_#0f172a]">
-        <h1 className="text-2xl font-black text-slate-900">Admin Panel</h1>
-        <p className="mt-1 font-mono text-xs uppercase tracking-widest text-slate-500">
+      <div className={`${panelClass} p-6`}>
+        <h1
+          className={`text-2xl font-black ${isDark ? 'text-slate-100' : 'text-slate-900'}`}
+        >
+          Admin Panel
+        </h1>
+        <p
+          className={`mt-1 font-mono text-xs uppercase tracking-widest ${
+            isDark ? 'text-slate-500' : 'text-slate-500'
+          }`}
+        >
           Manage rooms and view analytics
         </p>
       </div>
 
       {/* Stats row */}
-      <div className="grid grid-cols-3 gap-4">
-        <div className="rounded-2xl border-2 border-slate-900 bg-white p-4 shadow-[4px_4px_0px_0px_#0f172a]">
-          <p className="text-3xl font-black text-slate-900">{rooms.length}</p>
-          <p className="mt-1 font-mono text-xs uppercase text-slate-500">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className={`${panelClass} p-4`}>
+          <p
+            className={`text-3xl font-black ${isDark ? 'text-slate-100' : 'text-slate-900'}`}
+          >
+            {rooms.length}
+          </p>
+          <p
+            className={`mt-1 font-mono text-xs uppercase ${isDark ? 'text-slate-500' : 'text-slate-500'}`}
+          >
             Total
           </p>
         </div>
-        <div className="rounded-2xl border-2 border-slate-900 bg-green-100 p-4 shadow-[4px_4px_0px_0px_#0f172a]">
-          <p className="text-3xl font-black text-green-600">{freeCount}</p>
-          <p className="mt-1 font-mono text-xs uppercase text-green-700">
+        <div
+          className={`rounded-2xl border-2 p-4 shadow-[4px_4px_0px_0px_#0f172a] ${isDark ? 'border-slate-700 bg-green-900/30' : 'border-slate-900 bg-green-100'}`}
+        >
+          <p
+            className={`text-3xl font-black ${isDark ? 'text-green-300' : 'text-green-600'}`}
+          >
+            {freeCount}
+          </p>
+          <p
+            className={`mt-1 font-mono text-xs uppercase ${isDark ? 'text-green-400' : 'text-green-700'}`}
+          >
             Free
           </p>
         </div>
-        <div className="rounded-2xl border-2 border-slate-900 bg-red-100 p-4 shadow-[4px_4px_0px_0px_#0f172a]">
-          <p className="text-3xl font-black text-red-600">{occupiedCount}</p>
-          <p className="mt-1 font-mono text-xs uppercase text-red-700">
+        <div
+          className={`rounded-2xl border-2 p-4 shadow-[4px_4px_0px_0px_#0f172a] ${isDark ? 'border-slate-700 bg-red-900/30' : 'border-slate-900 bg-red-100'}`}
+        >
+          <p
+            className={`text-3xl font-black ${isDark ? 'text-red-300' : 'text-red-600'}`}
+          >
+            {occupiedCount}
+          </p>
+          <p
+            className={`mt-1 font-mono text-xs uppercase ${isDark ? 'text-red-400' : 'text-red-700'}`}
+          >
             Occupied
           </p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <div className="rounded-2xl border-2 border-slate-900 bg-white p-4 shadow-[4px_4px_0px_0px_#0f172a]">
-          <p className="font-mono text-xs uppercase tracking-widest text-slate-500">
+        <div className={`${panelClass} p-4`}>
+          <p
+            className={`font-mono text-xs uppercase tracking-widest ${isDark ? 'text-slate-500' : 'text-slate-500'}`}
+          >
             Usage Count
           </p>
-          <p className="mt-2 text-2xl font-black text-slate-900">
+          <p
+            className={`mt-2 text-2xl font-black ${isDark ? 'text-slate-100' : 'text-slate-900'}`}
+          >
             {analytics.usageCount}
           </p>
         </div>
-        <div className="rounded-2xl border-2 border-slate-900 bg-white p-4 shadow-[4px_4px_0px_0px_#0f172a]">
-          <p className="font-mono text-xs uppercase tracking-widest text-slate-500">
+        <div className={`${panelClass} p-4`}>
+          <p
+            className={`font-mono text-xs uppercase tracking-widest ${isDark ? 'text-slate-500' : 'text-slate-500'}`}
+          >
             Peak Hour
           </p>
-          <p className="mt-2 text-sm font-bold text-slate-900">
+          <p
+            className={`mt-2 text-sm font-bold ${isDark ? 'text-slate-100' : 'text-slate-900'}`}
+          >
             {analytics.peakHour}
           </p>
         </div>
-        <div className="rounded-2xl border-2 border-slate-900 bg-yellow-100 p-4 shadow-[4px_4px_0px_0px_#0f172a]">
-          <p className="font-mono text-xs uppercase tracking-widest text-yellow-700">
+        <div
+          className={`rounded-2xl border-2 p-4 shadow-[4px_4px_0px_0px_#0f172a] ${isDark ? 'border-slate-700 bg-yellow-900/30' : 'border-slate-900 bg-yellow-100'}`}
+        >
+          <p
+            className={`font-mono text-xs uppercase tracking-widest ${isDark ? 'text-yellow-400' : 'text-yellow-700'}`}
+          >
             Reservations
           </p>
-          <p className="mt-2 text-2xl font-black text-yellow-600">
+          <p
+            className={`mt-2 text-2xl font-black ${isDark ? 'text-yellow-300' : 'text-yellow-600'}`}
+          >
             {analytics.reservationActions}
           </p>
         </div>
@@ -180,16 +235,21 @@ export default function Admin() {
 
       {/* Analytics chart */}
       {rooms.length > 0 && (
-        <div className="rounded-2xl border-2 border-slate-900 bg-white p-6 shadow-[4px_4px_0px_0px_#0f172a]">
-          <h2 className="mb-4 font-mono text-xs font-bold uppercase tracking-widest text-slate-500">
+        <div className={`${panelClass} p-6`}>
+          <h2
+            className={`mb-4 font-mono text-xs font-bold uppercase tracking-widest ${isDark ? 'text-slate-500' : 'text-slate-500'}`}
+          >
             Room Status Overview
           </h2>
           <ResponsiveContainer width="100%" height={160}>
             <BarChart data={chartData} barSize={24}>
               <XAxis
                 dataKey="name"
-                tick={{ fontSize: 11, fill: '#64748b' }}
-                axisLine={{ stroke: '#0f172a', strokeWidth: 2 }}
+                tick={{ fontSize: 11, fill: isDark ? '#94a3b8' : '#64748b' }}
+                axisLine={{
+                  stroke: isDark ? '#475569' : '#0f172a',
+                  strokeWidth: 2,
+                }}
                 tickLine={false}
               />
               <YAxis hide domain={[0, 1]} />
@@ -200,10 +260,10 @@ export default function Admin() {
                 ]}
                 contentStyle={{
                   borderRadius: 10,
-                  border: '2px solid #0f172a',
+                  border: isDark ? '2px solid #334155' : '2px solid #0f172a',
                   fontSize: 12,
-                  background: '#ffffff',
-                  color: '#0f172a',
+                  background: isDark ? '#1e293b' : '#ffffff',
+                  color: isDark ? '#f1f5f9' : '#0f172a',
                 }}
               />
               <Bar dataKey="status" radius={[6, 6, 0, 0]}>
@@ -220,8 +280,10 @@ export default function Admin() {
       )}
 
       {/* Add room */}
-      <div className="rounded-2xl border-2 border-slate-900 bg-white p-6 shadow-[4px_4px_0px_0px_#0f172a]">
-        <h2 className="mb-4 font-mono text-xs font-bold uppercase tracking-widest text-slate-500">
+      <div className={`${panelClass} p-6`}>
+        <h2
+          className={`mb-4 font-mono text-xs font-bold uppercase tracking-widest ${isDark ? 'text-slate-500' : 'text-slate-500'}`}
+        >
           Add New Room
         </h2>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
@@ -232,7 +294,7 @@ export default function Admin() {
             }
             onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
             placeholder="Room name"
-            className="rounded-lg border-2 border-slate-900 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 outline-none transition-all focus:bg-yellow-50"
+            className={formInputClass}
           />
           <input
             value={newRoom.building}
@@ -240,7 +302,7 @@ export default function Admin() {
               setNewRoom((prev) => ({ ...prev, building: e.target.value }))
             }
             placeholder="Building"
-            className="rounded-lg border-2 border-slate-900 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 outline-none transition-all focus:bg-yellow-50"
+            className={formInputClass}
           />
           <input
             value={newRoom.floor}
@@ -248,7 +310,7 @@ export default function Admin() {
               setNewRoom((prev) => ({ ...prev, floor: e.target.value }))
             }
             placeholder="Floor"
-            className="rounded-lg border-2 border-slate-900 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 outline-none transition-all focus:bg-yellow-50"
+            className={formInputClass}
           />
           <input
             value={newRoom.type}
@@ -256,7 +318,7 @@ export default function Admin() {
               setNewRoom((prev) => ({ ...prev, type: e.target.value }))
             }
             placeholder="Type (classroom, lab, etc.)"
-            className="rounded-lg border-2 border-slate-900 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 outline-none transition-all focus:bg-yellow-50"
+            className={formInputClass}
           />
           <input
             value={newRoom.capacity}
@@ -269,7 +331,7 @@ export default function Admin() {
               }))
             }
             placeholder="Capacity"
-            className="rounded-lg border-2 border-slate-900 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 outline-none transition-all focus:bg-yellow-50"
+            className={formInputClass}
           />
           <input
             value={newRoom.features}
@@ -277,7 +339,7 @@ export default function Admin() {
               setNewRoom((prev) => ({ ...prev, features: e.target.value }))
             }
             placeholder="Features (comma-separated)"
-            className="rounded-lg border-2 border-slate-900 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 outline-none transition-all focus:bg-yellow-50"
+            className={formInputClass}
           />
           <input
             value={newRoom.note}
@@ -285,12 +347,16 @@ export default function Admin() {
               setNewRoom((prev) => ({ ...prev, note: e.target.value }))
             }
             placeholder="Optional note"
-            className="md:col-span-2 rounded-lg border-2 border-slate-900 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 outline-none transition-all focus:bg-yellow-50"
+            className={`md:col-span-2 ${formInputClass}`}
           />
           <button
             onClick={handleAdd}
             disabled={adding}
-            className="md:col-span-2 rounded-xl bg-yellow-400 px-5 py-2.5 text-sm font-bold text-slate-900 ring-2 ring-slate-900 transition-all duration-200 hover:bg-yellow-300 active:scale-95 disabled:opacity-60"
+            className={`md:col-span-2 rounded-xl px-5 py-2.5 text-sm font-bold ring-2 transition-all duration-200 active:scale-95 disabled:opacity-60 ${
+              isDark
+                ? 'bg-yellow-500 text-slate-900 ring-slate-900/30 hover:bg-yellow-400'
+                : 'bg-yellow-400 text-slate-900 ring-slate-900 hover:bg-yellow-300'
+            }`}
           >
             {adding ? 'Adding...' : 'Add Room'}
           </button>
@@ -303,14 +369,22 @@ export default function Admin() {
       </div>
 
       {/* Room list */}
-      <div className="overflow-hidden rounded-2xl border-2 border-slate-900 bg-white shadow-[4px_4px_0px_0px_#0f172a]">
-        <div className="border-b-2 border-slate-900 bg-slate-100 px-6 py-3">
-          <p className="font-mono text-xs font-bold uppercase tracking-widest text-slate-600">
+      <div
+        className={`overflow-hidden rounded-2xl border-2 ${isDark ? 'border-slate-700 bg-[#242424]' : 'border-slate-900 bg-white'} shadow-[4px_4px_0px_0px_#0f172a]`}
+      >
+        <div
+          className={`border-b-2 px-6 py-3 ${isDark ? 'border-slate-700 bg-slate-800' : 'border-slate-900 bg-slate-100'}`}
+        >
+          <p
+            className={`font-mono text-xs font-bold uppercase tracking-widest ${isDark ? 'text-slate-400' : 'text-slate-600'}`}
+          >
             Rooms ({rooms.length})
           </p>
         </div>
         {rooms.length === 0 && (
-          <div className="px-6 py-10 text-center font-mono text-sm text-slate-500">
+          <div
+            className={`px-6 py-10 text-center font-mono text-sm ${isDark ? 'text-slate-500' : 'text-slate-500'}`}
+          >
             No rooms yet. Add one above.
           </div>
         )}
@@ -319,7 +393,7 @@ export default function Admin() {
           return (
             <div
               key={room.id}
-              className="flex items-center justify-between gap-3 border-b border-slate-200 px-6 py-4 last:border-b-0"
+              className={`flex items-center justify-between gap-3 border-b px-4 py-3 sm:px-6 sm:py-4 last:border-b-0 ${isDark ? 'border-slate-700' : 'border-slate-200'}`}
             >
               <div className="flex items-center gap-3 min-w-0">
                 <span
@@ -331,16 +405,24 @@ export default function Admin() {
                         : 'bg-red-500'
                   }`}
                 />
-                <span className="truncate font-bold text-slate-900">
+                <span
+                  className={`truncate font-bold ${isDark ? 'text-slate-100' : 'text-slate-900'}`}
+                >
                   {room.name}
                 </span>
                 <span
-                  className={`hidden sm:inline text-xs font-bold uppercase px-2 py-0.5 rounded-lg border-2 border-slate-900 ${
+                  className={`hidden sm:inline text-xs font-bold uppercase px-2 py-0.5 rounded-lg border-2 ${isDark ? 'border-slate-600' : 'border-slate-900'} ${
                     status === STATUS.FREE
-                      ? 'bg-green-100 text-green-600'
+                      ? isDark
+                        ? 'bg-green-900/30 text-green-300'
+                        : 'bg-green-100 text-green-600'
                       : status === STATUS.RESERVED
-                        ? 'bg-yellow-100 text-yellow-600'
-                        : 'bg-red-100 text-red-600'
+                        ? isDark
+                          ? 'bg-yellow-900/30 text-yellow-300'
+                          : 'bg-yellow-100 text-yellow-600'
+                        : isDark
+                          ? 'bg-red-900/30 text-red-300'
+                          : 'bg-red-100 text-red-600'
                   }`}
                 >
                   {status}
@@ -349,7 +431,11 @@ export default function Admin() {
               <div className="flex items-center gap-2 flex-shrink-0">
                 <button
                   onClick={() => setQrRoom(room)}
-                  className="rounded-lg border-2 border-slate-900 bg-white px-3 py-1.5 text-xs font-bold text-slate-600 transition-all duration-200 hover:bg-yellow-400 active:scale-95"
+                  className={`rounded-lg border-2 px-3 py-1.5 text-xs font-bold transition-all duration-200 active:scale-95 ${
+                    isDark
+                      ? 'border-slate-600 bg-slate-800 text-slate-200 hover:bg-yellow-500 hover:text-slate-900'
+                      : 'border-slate-900 bg-white text-slate-600 hover:bg-yellow-400'
+                  }`}
                 >
                   QR
                 </button>
@@ -375,19 +461,27 @@ export default function Admin() {
           onClick={() => setConfirmDelete(null)}
         >
           <div
-            className="mx-4 w-full max-w-sm rounded-2xl border-2 border-slate-900 bg-[#fdfbf7] p-6 shadow-[8px_8px_0px_0px_#0f172a]"
+            className={`mx-4 w-full max-w-sm rounded-2xl border-2 p-6 shadow-[8px_8px_0px_0px_#0f172a] ${isDark ? 'border-slate-700 bg-[#242424]' : 'border-slate-900 bg-[#fdfbf7]'}`}
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="mb-2 text-lg font-black text-slate-900">
+            <h3
+              className={`mb-2 text-lg font-black ${isDark ? 'text-slate-100' : 'text-slate-900'}`}
+            >
               Delete Room?
             </h3>
-            <p className="mb-5 text-sm font-medium text-slate-600">
+            <p
+              className={`mb-5 text-sm font-medium ${isDark ? 'text-slate-300' : 'text-slate-600'}`}
+            >
               <strong>{confirmDelete.name}</strong> will be permanently removed.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setConfirmDelete(null)}
-                className="flex-1 rounded-xl border-2 border-slate-900 bg-white py-2.5 text-sm font-bold text-slate-600 transition-all duration-200 hover:bg-slate-100 active:scale-95"
+                className={`flex-1 rounded-xl border-2 py-2.5 text-sm font-bold transition-all duration-200 active:scale-95 ${
+                  isDark
+                    ? 'border-slate-600 bg-slate-800 text-slate-200 hover:bg-slate-700'
+                    : 'border-slate-900 bg-white text-slate-600 hover:bg-slate-100'
+                }`}
               >
                 Cancel
               </button>

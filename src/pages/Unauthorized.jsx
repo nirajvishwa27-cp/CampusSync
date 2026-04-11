@@ -12,10 +12,10 @@ export default function Unauthorized() {
         </p>
         <div className="mt-6 flex justify-center gap-3">
           <Link
-            to="/app"
+            to="/dashboard"
             className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
           >
-            Go to home
+            Go to dashboard
           </Link>
           <Link
             to="/"
