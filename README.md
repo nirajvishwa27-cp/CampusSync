@@ -1,5 +1,7 @@
 # CampusSync 🏫
 
+Check Live application - https://campussync-c3d3c.web.app/
+
 Real-time campus room availability tracker. Built with React + Vite + Firebase (Firestore + Auth).
 
 ---
